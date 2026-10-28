@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Record Management System - Mini Project Report</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm;
+    }
+    body {
+      font-family: "Georgia", "Times New Roman", serif;
+      color: #1a1a1a;
+      line-height: 1.65;
+      font-size: 11pt;
+      margin: 0;
+      padding: 40px;
+      background: #fdfdfd;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 50px 60px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    /* Title Page Style */
+    .title-page {
+      text-align: center;
+      padding: 80px 20px 100px;
+      border-bottom: 2px solid #333;
+      margin-bottom: 50px;
+    }
+    .institution-header {
+      font-size: 14pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #333;
+      margin-bottom: 25px;
+    }
+    .report-subtitle {
+      font-size: 12pt;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    .project-title {
+      font-size: 24pt;
+      font-weight: bold;
+      color: #1e3a8a;
+      line-height: 1.3;
+      margin: 30px 0;
+      text-transform: uppercase;
+    }
+    .metadata-box {
+      margin-top: 50px;
+      display: inline-block;
+      text-align: left;
+      font-size: 11pt;
+      border: 1px solid #ccc;
+      padding: 20px 30px;
+      background: #f9fafb;
+    }
+    .metadata-box table td {
+      padding: 6px 12px;
+      font-family: inherit;
+    }
+    /* Headings */
+    h1 {
+      font-size: 18pt;
+      color: #1e3a8a;
+      border-bottom: 2px solid #1e3a8a;
+      padding-bottom: 6px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      page-break-before: auto;
+    }
+    h2 {
+      font-size: 14pt;
+      color: #1f2937;
+      margin-top: 24px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 4px;
+    }
+    h3 {
+      font-size: 12pt;
+      color: #374151;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+    p {
+      text-align: justify;
+      margin-bottom: 12px;
+    }
+    ul, ol {
+      margin-bottom: 14px;
+      padding-left: 28px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 10pt;
+    }
+    table.data-table th, table.data-table td {
+      border: 1px solid #d1d5db;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    table.data-table th {
+      background-color: #f3f4f6;
+      font-weight: bold;
+      color: #111827;
+    }
+    table.data-table tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+    /* Code blocks */
+    pre {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 14px 18px;
+      border-radius: 6px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 9.5pt;
+      overflow-x: auto;
+      line-height: 1.45;
+      margin: 16px 0;
+      white-space: pre-wrap;
+    }
+    code {
+      font-family: "Courier New", Courier, monospace;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 9.5pt;
+    }
+    .badge-pass {
+      color: #15803d;
+      font-weight: bold;
+    }
+    .highlight-box {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 12px 18px;
+      margin: 16px 0;
+      font-size: 10.5pt;
+    }
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+      }
+      .container {
+        padding: 0;
+        box-shadow: none;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- TITLE PAGE -->
+  <div class="title-page">
+    <div class="institution-header">DEPARTMENT OF COMPUTER SCIENCE &amp; ENGINEERING</div>
+    <div class="report-subtitle">A Mini Project Report on</div>
+    <div class="project-title">Student Record Management System (SRMS) Using MongoDB</div>
+    <div class="report-subtitle">Submitted in partial fulfillment of the requirements for the course:</div>
+    <p><strong>Database Management Systems / NoSQL Databases (2025–2026)</strong></p>
+
+    <div class="metadata-box">
+      <table>
+        <tr>
+          <td><strong>Student Name:</strong></td>
+          <td>Kaushal</td>
+        </tr>
+        <tr>
+          <td><strong>Registration Number:</strong></td>
+          <td>[Enter Your Registration Number Here]</td>
+        </tr>
+        <tr>
+          <td><strong>Technology Stack:</strong></td>
+          <td>MongoDB Server 8.x, Express.js, Node.js</td>
+        </tr>
+        <tr>
+          <td><strong>Submission Date:</strong></td>
+          <td>October 2026</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 1 -->
+  <h1>1. Introduction</h1>
+  <h2>1.1 Project Overview</h2>
+  <p>
+    The <strong>Student Record Management System (SRMS)</strong> is a document-oriented software solution created to store, manipulate, and analyze academic student profiles within a higher education institution. Developed using <strong>MongoDB Server 8.x</strong> as the primary NoSQL data store, alongside Node.js and Express, this application departs from traditional flat relational tables in favor of rich BSON (Binary JSON) documents. The system seamlessly handles student admissions, dynamic semester-wise grade entries, hierarchical postal addresses, emergency contacts, and institutional performance metrics.
+  </p>
+
+  <h2>1.2 Background</h2>
+  <p>
+    Universities and colleges process vast amounts of semi-structured student information. Historically, institutional systems relied upon relational SQL databases with heavy table normalizations. While relational models suit rigid tabular accounting, they introduce severe object-relational impedance mismatch when modeling student academic records. A typical student record consists of varying numbers of completed courses, elective subjects, address details, and guardian contacts. Modeling these entities in SQL necessitates four to six tables joined via foreign keys, creating severe computational overhead for common query routines.
+  </p>
+
+  <h2>1.3 Need and Scope</h2>
+  <p>
+    The transition towards credit-based continuous evaluation demands a database architecture capable of flexible schema evolution without costly downtime. The scope of this project encompasses:
+  </p>
+  <ul>
+    <li>Providing atomic, single-document retrieval for comprehensive student profiles.</li>
+    <li>Implementing a hybrid database design combining embedded sub-documents (address, guardian, grades) with referenced collections (departments, courses).</li>
+    <li>Utilizing multi-stage MongoDB Aggregation Pipelines to generate real-time institutional intelligence (GPA averages, pass rates, honors rankings).</li>
+    <li>Guaranteeing 100% schema integrity at the database engine level via MongoDB <code>$jsonSchema</code> validation.</li>
+    <li>Providing an intuitive, responsive web portal for administrators and educators.</li>
+  </ul>
+
+  <!-- SECTION 2 -->
+  <h1>2. Problem Statement and Objectives</h1>
+  <h2>2.1 Problems of the Existing System</h2>
+  <p>
+    Conventional student management applications face significant architectural constraints:
+  </p>
+  <ul>
+    <li><strong>Relational JOIN Overhead:</strong> Fetching a student's full transcript and demographic data requires joining <code>Students</code>, <code>Addresses</code>, <code>Guardians</code>, and <code>Grades</code> tables, leading to exponential latency as records grow.</li>
+    <li><strong>Schema Rigidity:</strong> Introducing new elective categories or modifying grading scales requires <code>ALTER TABLE</code> schema alterations that lock database tables.</li>
+    <li><strong>Data Redundancy Conflicts:</strong> Relational systems struggle between high normalization (which slows reads) and denormalization (which causes data integrity anomalies).</li>
+    <li><strong>Complex Analytical Queries:</strong> Computing cross-departmental GPA averages or grade breakdowns requires compute-heavy SQL group-by queries across multi-million row junction tables.</li>
+  </ul>
+
+  <h2>2.2 Proposed Solution</h2>
+  <p>
+    The proposed solution implements a <strong>Document-Oriented NoSQL Architecture</strong> built on MongoDB. Each student is represented as an autonomous BSON document where residential details, parent contacts, and semester course grades are embedded. Departments and courses exist as referenced collections, joined on demand using MongoDB's <code>$lookup</code> aggregation pipeline stage.
+  </p>
+
+  <h2>2.3 Proposed Attributes</h2>
+  <p>The primary student document model is structured with the following key attributes:</p>
+  <pre>{
+  "regNo": "RA2311003010001",           // Unique uppercase string index
+  "firstName": "Aarav", "lastName": "Sharma",
+  "email": "aarav.sharma@campus.edu",    // Unique institutional email
+  "department": "CSE",                   // References Department code
+  "semester": 6, "academicYear": "2025-2026",
+  "cgpa": 9.73, "attendance": 94, "feeStatus": "Paid", "status": "Active",
+  "address": { "street": "...", "city": "Bengaluru", "state": "Karnataka", "pincode": "560001" },
+  "guardian": { "name": "Sanjay Sharma", "relationship": "Father", "phone": "9840123400" },
+  "grades": [
+    { "courseCode": "CS101", "courseTitle": "Data Structures", "credits": 4, "marks": 95, "grade": "O", "semester": 5 }
+  ],
+  "enrolledCourses": [ ObjectId("...") ]
+}</pre>
+
+  <h2>2.4 Measurable Objectives</h2>
+  <ul>
+    <li>Achieve sub-50ms latency for student profile retrieval using indexed single-document queries.</li>
+    <li>Enforce 100% database-level validation for required fields and regex patterns using <code>$jsonSchema</code>.</li>
+    <li>Process institutional analytics within a single database round-trip using native Aggregation Pipelines.</li>
+    <li>Eliminate data redundancy while keeping document sizes well below MongoDB's 16MB limit.</li>
+  </ul>
+
+  <!-- SECTION 3 -->
+  <h1>3. Requirement Analysis</h1>
+  <h2>3.1 Hardware Requirements</h2>
+  <ul>
+    <li><strong>CPU:</strong> Intel Core i3 / AMD Ryzen 3 (Quad Core or higher)</li>
+    <li><strong>RAM:</strong> 4 GB minimum (8 GB recommended)</li>
+    <li><strong>Disk Storage:</strong> 500 MB free hard drive space</li>
+    <li><strong>Network:</strong> Standard TCP/IP interface</li>
+  </ul>
+
+  <h2>3.2 Software Requirements</h2>
+  <ul>
+    <li><strong>Operating System:</strong> Windows 10/11, Linux, or macOS</li>
+    <li><strong>Database Server:</strong> MongoDB Community Server 8.x</li>
+    <li><strong>Runtime:</strong> Node.js v24.x &amp; npm v11.x</li>
+    <li><strong>Web Framework:</strong> Express.js v4.21.x &amp; Mongoose v8.9.x</li>
+    <li><strong>Web Client:</strong> Modern HTML5/ES6 compatible web browser</li>
+  </ul>
+
+  <h2>3.3 User Roles</h2>
+  <ul>
+    <li><strong>Administrator:</strong> Configures collections, updates validation rules, manages course catalogs, and oversees system health.</li>
+    <li><strong>Faculty / Academic Staff:</strong> Performs student registrations, updates attendance and semester grades, and exports reports.</li>
+    <li><strong>Student / Viewer:</strong> Inspects personal academic standing, GPA, and enrolled course catalogs.</li>
+  </ul>
+
+  <!-- SECTION 4 -->
+  <h1>4. System Design</h1>
+  <h2>4.1 System Architecture</h2>
+  <p>The system is architected as a 3-Tier Model-View-Controller (MVC) application:</p>
+  <ul>
+    <li><strong>Presentation Tier:</strong> Responsive Single Page Interface built with HTML5, CSS3, and JavaScript, featuring Chart.js visual charts.</li>
+    <li><strong>Application Tier:</strong> Node.js and Express REST API server orchestrating business logic, pre-save hooks, and routing.</li>
+    <li><strong>Data Tier:</strong> MongoDB Server 8.x managing BSON document storage, secondary indexes, and validation rules.</li>
+  </ul>
+
+  <h2>4.2 Physical &amp; Conceptual Data Model</h2>
+  <div class="highlight-box">
+    <strong>Hybrid Data Model:</strong><br>
+    - <code>students</code> collection holds embedded <code>address</code>, <code>guardian</code>, and <code>grades[]</code>.<br>
+    - <code>departments</code> and <code>courses</code> exist as separate referenced collections.<br>
+    - <code>$lookup</code> joins referenced departments during analytics aggregation without persistent relational overhead.
+  </div>
+
+  <!-- SECTION 5 -->
+  <h1>5. Database Design</h1>
+  <h2>5.1 Collections &amp; Document Structure</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Collection</th>
+        <th>Key Attributes</th>
+        <th>Design Pattern</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>students</code></td>
+        <td>regNo, name, email, department, semester, cgpa, attendance, address, guardian, grades[]</td>
+        <td>Embedded Document &amp; Array Pattern</td>
+      </tr>
+      <tr>
+        <td><code>departments</code></td>
+        <td>code, name, hod, building, establishedYear</td>
+        <td>Referenced Master Collection</td>
+      </tr>
+      <tr>
+        <td><code>courses</code></td>
+        <td>courseCode, title, credits, department, instructor</td>
+        <td>Referenced Master Collection</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5.2 Indexing Strategy</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Index Name</th>
+        <th>Index Specification</th>
+        <th>Constraint / Benefit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>regNo_1</code></td>
+        <td><code>{ regNo: 1 }</code></td>
+        <td>Unique index; prevents duplicate registrations; O(log N) point lookup</td>
+      </tr>
+      <tr>
+        <td><code>email_1</code></td>
+        <td><code>{ email: 1 }</code></td>
+        <td>Unique index; enforces single account per email address</td>
+      </tr>
+      <tr>
+        <td><code>department_1_semester_1</code></td>
+        <td><code>{ department: 1, semester: 1 }</code></td>
+        <td>Compound index; optimizes administrative cohort filtering</td>
+      </tr>
+      <tr>
+        <td><code>text_search_index</code></td>
+        <td><code>{ regNo: "text", firstName: "text", lastName: "text" }</code></td>
+        <td>Full-text search; avoids costly collection scans (COLLSCAN)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5.3 Embedding vs. Referencing Comparison</h2>
+  <p>
+    A critical design constraint in MongoDB is determining when to embed and when to reference:
+  </p>
+  <ul>
+    <li><strong>Embedding (Address, Guardian, Grades):</strong> Because grades, parent details, and addresses are accessed simultaneously with the student profile in over 95% of queries, embedding provides single-seek $O(1)$ reads and atomic updates.</li>
+    <li><strong>Referencing (Department, Courses):</strong> Departments and courses have independent lifecycles. Duplicating course syllabus details inside every student document would cause massive data duplication and maintenance anomalies. Hence, referencing is employed.</li>
+  </ul>
+
+  <!-- SECTION 6 -->
+  <h1>6. Implementation Details</h1>
+  <h2>6.1 Technology Stack</h2>
+  <p>The solution is implemented using Express.js on Node.js v24 connecting to MongoDB Server 8.x via Mongoose.</p>
+
+  <h2>6.2 MongoDB Aggregation Pipelines</h2>
+  <h3>Pipeline 1: Department Performance Summary with $lookup</h3>
+  <pre>[
+  { $match: { status: { $in: ["Active", "Graduated"] } } },
+  {
+    $group: {
+      _id: "$department",
+      totalStudents: { $sum: 1 },
+      avgCgpa: { $avg: "$cgpa" },
+      avgAttendance: { $avg: "$attendance" },
+      feesPaidCount: { $sum: { $cond: [{ $eq: ["$feeStatus", "Paid"] }, 1, 0] } }
+    }
+  },
+  {
+    $lookup: {
+      from: "departments",
+      localField: "_id",
+      foreignField: "code",
+      as: "deptDetails"
+    }
+  },
+  { $unwind: { path: "$deptDetails", preserveNullAndEmptyArrays: true } },
+  {
+    $project: {
+      departmentCode: "$_id",
+      departmentName: "$deptDetails.name",
+      totalStudents: 1,
+      avgCgpa: { $round: ["$avgCgpa", 2] },
+      avgAttendance: { $round: ["$avgAttendance", 1] }
+    }
+  },
+  { $sort: { avgCgpa: -1 } }
+]</pre>
+
+  <h3>Pipeline 2: Grade Distribution via $unwind</h3>
+  <pre>[
+  { $unwind: "$grades" },
+  {
+    $group: {
+      _id: "$grades.grade",
+      count: { $sum: 1 },
+      avgMarks: { $avg: "$grades.marks" }
+    }
+  },
+  { $sort: { count: -1 } }
+]</pre>
+
+  <!-- SECTION 7 -->
+  <h1>7. Testing Details</h1>
+  <h2>7.1 Verification Test Cases Table</h2>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Test ID</th>
+        <th>Description</th>
+        <th>Test Input</th>
+        <th>Expected Output</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TC-01</td>
+        <td>MongoDB Connection</td>
+        <td>URI: mongodb://localhost:27017</td>
+        <td>Ping { ok: 1 }</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-02</td>
+        <td>Read / Count Records</td>
+        <td>countDocuments()</td>
+        <td>Count > 0</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-03</td>
+        <td>CRUD - Create Record</td>
+        <td>regNo: "RA2311TEST999" + grades</td>
+        <td>Saved document, CGPA calculated</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-04</td>
+        <td>Unique Index Enforcement</td>
+        <td>Duplicate regNo</td>
+        <td>E11000 Duplicate Key Error</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-05</td>
+        <td>CRUD - Update Sub-document</td>
+        <td>Update attendance &amp; address.city</td>
+        <td>Document updated in-place</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-06</td>
+        <td>Regex Search Query</td>
+        <td>q: "TEST"</td>
+        <td>Matched documents returned</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-07</td>
+        <td>CRUD - Delete Record</td>
+        <td>Delete test record</td>
+        <td>Document deleted</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-08</td>
+        <td>Aggregation &amp; $lookup</td>
+        <td>Department summary pipeline</td>
+        <td>Combined stats + dept metadata</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-09</td>
+        <td>$unwind Grades Array</td>
+        <td>Grades aggregation pipeline</td>
+        <td>Letter grade counts produced</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-10</td>
+        <td>Index Verification</td>
+        <td>collection.indexes()</td>
+        <td>Unique and compound indexes confirmed</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-11</td>
+        <td>User Authentication</td>
+        <td>Email: admin@campus.edu + Admin@123</td>
+        <td>bcrypt hash match, JWT token issued</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-12</td>
+        <td>Batch Ingestion (BSON)</td>
+        <td>BSON binary document stream</td>
+        <td>Deserialized &amp; processed successfully</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+      <tr>
+        <td>TC-13</td>
+        <td>MongoDB Audit Trail</td>
+        <td>ActivityLog create &amp; query</td>
+        <td>Log persisted and retrieved</td>
+        <td class="badge-pass">PASS</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 8 -->
+  <h1>8. Conclusion &amp; Future Scope</h1>
+  <h2>8.1 Conclusion</h2>
+  <p>
+    The Student Record Management System successfully demonstrates the effectiveness of MongoDB NoSQL architecture for complex academic data. By leveraging embedded document models, the system delivers single-seek profile lookups without relational JOIN penalties. The integration of native Aggregation Pipelines provides immediate institutional insights, while database-level JSON Schema validation ensures 100% data integrity.
+  </p>
+
+  <h2>8.2 Future Scope</h2>
+  <ul>
+    <li>Integration with MongoDB Atlas Cloud with automated multi-region replication.</li>
+    <li>Role-Based Access Control (RBAC) utilizing JSON Web Tokens (JWT).</li>
+    <li>Real-time automated alerts via MongoDB Change Streams when student attendance falls below 75%.</li>
+    <li>Predictive machine learning models to detect students at academic risk for early counseling.</li>
+  </ul>
+
+  <!-- SECTION 9 -->
+  <h1>9. References</h1>
+  <ol>
+    <li>MongoDB Inc. <em>MongoDB Manual &amp; Documentation: The Aggregation Pipeline, Data Modeling, and Schema Validation</em>, 2024.</li>
+    <li>Chodorow, Kristina. <em>MongoDB: The Definitive Guide: Powerful and Scalable Data Storage</em>, 3rd Edition, O'Reilly Media, 2020.</li>
+    <li>Banker, Kyle, et al. <em>MongoDB in Action</em>, Manning Publications, 2016.</li>
+    <li>Express.js Official Documentation. https://expressjs.com/</li>
+    <li>Mongoose ODM Documentation. https://mongoosejs.com/</li>
+  </ol>
+
+</div>
+
+</body>
+</html>

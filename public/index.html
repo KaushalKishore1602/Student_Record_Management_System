@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Record Management System | MongoDB</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Chart.js for high-fidelity interactive data visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header>
+    <div class="navbar">
+      <div class="brand">
+        <div class="brand-icon">🎓</div>
+        <div class="brand-text">
+          <h1>EduRecord Manager</h1>
+          <p>NoSQL Document-Based Student Record System &bull; MongoDB Server 8.x</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <button class="theme-toggle-btn" id="btn-theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙 Dark</button>
+        <button class="btn btn-secondary btn-sm" onclick="openLogsModal()" title="View Database Audit Logs">📜 Audit Logs</button>
+        <div class="db-badge">
+          <div class="pulse-dot"></div>
+          <span id="db-status-text">Connected: record_management_system</span>
+        </div>
+        <div class="user-auth-widget" id="user-auth-widget">
+          <button class="btn btn-secondary btn-sm" onclick="openLoginModal()" id="btn-login-trigger">🔐 Sign In</button>
+        </div>
+        <button class="btn btn-primary" onclick="openAddStudentModal()" id="btn-add-student-header">+ Add New Student</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <div class="tabs-container">
+      <button class="tab-btn active" data-tab="dashboard">📊 Dashboard & Analytics</button>
+      <button class="tab-btn" data-tab="directory">📋 Student Records Directory</button>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- TAB 1: DASHBOARD & ANALYTICS -->
+    <section id="dashboard" class="tab-content active">
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <h3>Total Enrolled</h3>
+            <div class="kpi-value" id="stat-total-students">--</div>
+            <p>Active Student Documents</p>
+          </div>
+          <div class="kpi-icon icon-blue">👥</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <h3>Average CGPA</h3>
+            <div class="kpi-value" id="stat-avg-cgpa">--</div>
+            <p>Across All Departments (10.0 Scale)</p>
+          </div>
+          <div class="kpi-icon icon-green">⭐</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <h3>Average Attendance</h3>
+            <div class="kpi-value" id="stat-avg-attendance">--</div>
+            <p>Institutional Compliance</p>
+          </div>
+          <div class="kpi-icon icon-purple">📈</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <h3>Academic Depts</h3>
+            <div class="kpi-value" id="stat-dept-count">--</div>
+            <p>Referenced Collections</p>
+          </div>
+          <div class="kpi-icon icon-amber">🏛️</div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>📊 Department-Wise Performance Summary</h3>
+            <span class="chart-badge">MongoDB $group &amp; $lookup</span>
+          </div>
+          <div class="chart-body">
+            <canvas id="deptChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>🎯 Grade Distribution</h3>
+            <span class="chart-badge">MongoDB $unwind &amp; $group</span>
+          </div>
+          <div class="chart-body">
+            <canvas id="gradeChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2>🏆 Academic Honor Roll (Top 5 Performers)</h2>
+            <p>Computed via MongoDB Aggregation Pipeline: <code>{ $match: { status: 'Active' } }, { $sort: { cgpa: -1 } }, { $limit: 5 }</code></p>
+          </div>
+        </div>
+        <div style="padding: 20px;">
+          <div class="leaderboard-list" id="leaderboard-list">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: STUDENT RECORDS DIRECTORY -->
+    <section id="directory" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2>Student Records Directory</h2>
+            <p>High-performance indexed querying with text search, regex, and compound filters</p>
+          </div>
+          <div class="panel-actions">
+            <button class="btn btn-primary btn-sm" onclick="openUploadModal()">📤 Import Data (CSV/JSON/BSON)</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportData('csv')">📥 Export CSV</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportData('json')">📥 Export JSON</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportData('bson')">📥 Export BSON</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddStudentModal()">+ Add Student</button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search by Reg No, Name, Email, or City...">
+          </div>
+          <select class="filter-select" id="filter-dept">
+            <option value="ALL">All Departments</option>
+          </select>
+          <select class="filter-select" id="filter-sem">
+            <option value="ALL">All Semesters</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+          </select>
+          <select class="filter-select" id="filter-fee">
+            <option value="ALL">All Fee Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Partial">Partial</option>
+            <option value="Pending">Pending</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" id="btn-defaulter-toggle" onclick="toggleDefaulterFilter()">⚠️ Defaulters (&lt;75%)</button>
+        </div>
+
+        <!-- Students Table -->
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Registration No</th>
+                <th>Student Name &amp; Email</th>
+                <th>Department</th>
+                <th>Semester</th>
+                <th>CGPA</th>
+                <th>Attendance</th>
+                <th>Fee Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Bar -->
+        <div class="pagination-bar">
+          <div id="pagination-info">Showing records...</div>
+          <div class="pagination-controls" id="pagination-controls"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD / EDIT STUDENT RECORD -->
+  <div class="modal-overlay" id="form-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="form-modal-title">Add New Student Record</h3>
+        <button class="modal-close" onclick="closeModal('form-modal')">&times;</button>
+      </div>
+      <form id="student-form">
+        <input type="hidden" id="student-id">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-section-title">👤 Basic Information</div>
+            <div class="form-group">
+              <label>Registration Number *</label>
+              <input type="text" id="form-regNo" placeholder="e.g. RA2311003010099" required style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+              <label>Institutional Email *</label>
+              <input type="email" id="form-email" placeholder="student@campus.edu" required>
+            </div>
+            <div class="form-group">
+              <label>First Name *</label>
+              <input type="text" id="form-firstName" placeholder="First Name" required>
+            </div>
+            <div class="form-group">
+              <label>Last Name *</label>
+              <input type="text" id="form-lastName" placeholder="Last Name" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" id="form-phone" placeholder="Contact Phone">
+            </div>
+            <div class="form-group">
+              <label>Gender</label>
+              <select id="form-gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-section-title">🏛️ Academic Enrollment</div>
+            <div class="form-group">
+              <label>Department *</label>
+              <select id="form-department" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Semester * (1 - 8)</label>
+              <input type="number" id="form-semester" min="1" max="8" value="1" required>
+            </div>
+            <div class="form-group">
+              <label>Attendance % (0 - 100)</label>
+              <input type="number" id="form-attendance" min="0" max="100" value="85" required>
+            </div>
+            <div class="form-group">
+              <label>Fee Status</label>
+              <select id="form-feeStatus">
+                <option value="Paid">Paid</option>
+                <option value="Partial">Partial</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label>Academic Status</label>
+              <select id="form-status">
+                <option value="Active">Active</option>
+                <option value="Suspended">Suspended</option>
+                <option value="Graduated">Graduated</option>
+                <option value="Alumni">Alumni</option>
+              </select>
+            </div>
+
+            <div class="form-section-title">📍 Embedded Residential Address</div>
+            <div class="form-group full-width">
+              <label>Street Address</label>
+              <input type="text" id="form-street" placeholder="Street Name &amp; House Number">
+            </div>
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" id="form-city" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label>State</label>
+              <input type="text" id="form-state" placeholder="State">
+            </div>
+            <div class="form-group">
+              <label>Pincode / Postal Code</label>
+              <input type="text" id="form-pincode" placeholder="Postal Code">
+            </div>
+
+            <div class="form-section-title">👨‍👩‍👦 Embedded Guardian Details</div>
+            <div class="form-group">
+              <label>Guardian Name</label>
+              <input type="text" id="form-g-name" placeholder="Guardian Name">
+            </div>
+            <div class="form-group">
+              <label>Relationship</label>
+              <input type="text" id="form-g-rel" placeholder="e.g. Father, Mother, Guardian" value="Parent">
+            </div>
+            <div class="form-group full-width">
+              <label>Guardian Phone</label>
+              <input type="text" id="form-g-phone" placeholder="Emergency Contact Phone">
+            </div>
+
+            <div class="form-section-title" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>📚 Embedded Academic Grades &amp; Performance</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="add-grade-row-btn">+ Add Course Grade</button>
+            </div>
+            <div class="form-group full-width">
+              <table class="grades-subtable">
+                <thead>
+                  <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th>Credits</th>
+                    <th>Marks</th>
+                    <th>Grade</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="grades-container">
+                  <!-- Dynamic rows added by JS -->
+                </tbody>
+              </table>
+              <small style="color: var(--text-muted); margin-top: 4px; display: block;">
+                * Student CGPA is automatically computed upon save using weighted credit points.
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('form-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save to MongoDB</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: VIEW STUDENT DETAILS -->
+  <div class="modal-overlay" id="view-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Student Record Profile</h3>
+        <button class="modal-close" onclick="closeModal('view-modal')">&times;</button>
+      </div>
+      <div class="modal-body" id="view-modal-body">
+        <!-- Populated dynamically via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('view-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SIGN IN / AUTHENTICATION -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3>🔐 Account Sign In</h3>
+        <button class="modal-close" onclick="closeModal('login-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+          Choose a demo user role or enter custom credentials:
+        </p>
+
+        <!-- Quick 1-Click Demo Logins -->
+        <div class="demo-login-grid">
+          <div class="demo-pill" onclick="quickFillLogin('admin@campus.edu', 'Admin@123')">
+            <div class="demo-pill-title role-admin">👑 Admin</div>
+            <div class="demo-pill-sub">Full Access</div>
+          </div>
+          <div class="demo-pill" onclick="quickFillLogin('faculty@campus.edu', 'Faculty@123')">
+            <div class="demo-pill-title role-faculty">👨‍🏫 Faculty</div>
+            <div class="demo-pill-sub">Grading &amp; Export</div>
+          </div>
+          <div class="demo-pill" onclick="quickFillLogin('student@campus.edu', 'Student@123')">
+            <div class="demo-pill-title role-student">🧑‍🎓 Student</div>
+            <div class="demo-pill-sub">Read Only</div>
+          </div>
+        </div>
+
+        <form id="login-form">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Institutional Email</label>
+            <input type="email" id="login-email" placeholder="e.g. admin@campus.edu" required>
+          </div>
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BATCH UPLOAD DATA (CSV, JSON, BSON) -->
+  <div class="modal-overlay" id="upload-modal">
+    <div class="modal-dialog" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3>📤 Batch Ingest Student Records</h3>
+        <button class="modal-close" onclick="closeModal('upload-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+          Upload multiple student records simultaneously into MongoDB. Supports <strong>CSV</strong>, <strong>JSON</strong>, and official binary <strong>BSON</strong> file formats.
+        </p>
+
+        <!-- Template Downloads -->
+        <div style="display: flex; gap: 10px; margin-bottom: 18px;">
+          <a href="/api/upload/template/csv" download class="btn btn-secondary btn-sm" style="flex: 1;">📥 Download Sample CSV</a>
+          <a href="/api/upload/template/json" download class="btn btn-secondary btn-sm" style="flex: 1;">📥 Download Sample JSON</a>
+          <a href="/api/upload/export/bson" download class="btn btn-secondary btn-sm" style="flex: 1;">📥 Export Current BSON</a>
+        </div>
+
+        <form id="upload-form">
+          <!-- Dropzone -->
+          <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+            <div class="upload-dropzone-icon">📁</div>
+            <h4 id="dropzone-text">Click to choose or Drag &amp; Drop file here</h4>
+            <p id="file-details">Supported formats: .csv, .json, .bson (Max 15MB)</p>
+            <div class="format-tags">
+              <span class="format-tag">.CSV</span>
+              <span class="format-tag">.JSON</span>
+              <span class="format-tag">.BSON</span>
+            </div>
+            <input type="file" id="file-input" accept=".csv, .json, .bson" style="display: none;">
+          </div>
+
+          <!-- Duplicate Strategy -->
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label>Duplicate Registration Number Handling Strategy:</label>
+            <select id="duplicate-strategy">
+              <option value="skip">Skip duplicates (Keep existing records in MongoDB)</option>
+              <option value="update">Update existing records (Merge with incoming file data)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('upload-modal')">Close</button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-upload">Upload &amp; Import to MongoDB</button>
+          </div>
+        </form>
+
+        <!-- Result Summary Box -->
+        <div id="upload-result-container" style="display: none;">
+          <!-- Dynamically populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: OFFICIAL STATEMENT OF GRADES (MARKSHEET) -->
+  <div class="modal-overlay" id="marksheet-modal">
+    <div class="modal-dialog" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3>📄 Official Statement of Grades / Marksheet</h3>
+        <button class="modal-close" onclick="closeModal('marksheet-modal')">&times;</button>
+      </div>
+      <div class="modal-body" id="marksheet-modal-body">
+        <!-- Dynamically rendered via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('marksheet-modal')">Close</button>
+        <button class="btn btn-primary" onclick="printModalContent('marksheet-modal-body')">🖨️ Print Marksheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DIGITAL STUDENT ID CARD -->
+  <div class="modal-overlay" id="idcard-modal">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3>🪪 Student Identification Card</h3>
+        <button class="modal-close" onclick="closeModal('idcard-modal')">&times;</button>
+      </div>
+      <div class="modal-body" id="idcard-modal-body">
+        <!-- Dynamically rendered via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('idcard-modal')">Close</button>
+        <button class="btn btn-primary" onclick="printModalContent('idcard-modal-body')">🖨️ Print ID Card</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FEE RECEIPT & VOUCHER -->
+  <div class="modal-overlay" id="receipt-modal">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3>🧾 Tuition &amp; Academic Fee Receipt</h3>
+        <button class="modal-close" onclick="closeModal('receipt-modal')">&times;</button>
+      </div>
+      <div class="modal-body" id="receipt-modal-body">
+        <!-- Dynamically rendered via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('receipt-modal')">Close</button>
+        <button class="btn btn-primary" onclick="printModalContent('receipt-modal-body')">🖨️ Print Receipt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DATABASE ACTIVITY AUDIT LOGS -->
+  <div class="modal-overlay" id="logs-modal">
+    <div class="modal-dialog" style="max-width: 850px;">
+      <div class="modal-header">
+        <h3>📜 MongoDB Activity Audit Trail</h3>
+        <button class="modal-close" onclick="closeModal('logs-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+          Tracks all create, update, delete, batch ingestion, and authentication operations in real-time.
+        </p>
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>User &amp; Role</th>
+                <th>Target</th>
+                <th>Details</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="logs-table-body">
+              <tr><td colspan="5" style="text-align: center; padding: 20px;">Loading audit logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('logs-modal')">Close</button>
+        <button class="btn btn-primary" onclick="loadActivityLogs()">🔄 Refresh Logs</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Main Application Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>
